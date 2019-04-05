@@ -3,39 +3,15 @@ import mmap
 from struct import unpack
 
 
-"""
-Below is code for the PageRank algorithm (power iteration),
-most of which has been implemented for you.
-
-Here, the binary index_file contains the mapping of each node's ID to its degree.
-The node IDs range from 0 to max_node_id.
-Hence, the index_file contains (max_node_id + 1) pairs of values,
-each of which is of 'int' C type in little endian byte order.
-The index_file is memory-mapped into the index_map object.
-
-The binary edge_file contains the edges in the (source ID, target ID) format.
-Hence, the edge_file contains edge_count pairs of values,
-each of which is of 'int' C type in big endian byte order.
-The edge_file is memory-mapped into the edge_map object.
-
-Your task is to determine the correct parameters needed to
-(1) initialize the memory-mapped objects (index_map and edge_map),
-(2) unpack the source and target IDs from the edge_map, and
-(3) upack the source ID and source degree from the index_map.
-
-This code assumes that the node IDs start from 0 and are contiguous up to max_node_id.
-Your algorithm, if implemented correctly, should return the same scores
-as popular graph analysis libraries like NetworkX.
-"""
 def pagerank(index_file, edge_file, max_node_id, edge_count, damping_factor=0.85, iterations=10):
     index_map = mmap.mmap(
         index_file.fileno(),
-        length=99999,  # ~~~ MODIFY THIS LINE (i) ~~~
+        length=(max_node_id+1)*8,
         access=mmap.ACCESS_READ)
 
     edge_map = mmap.mmap(
         edge_file.fileno(),
-        length=99999,  # ~~~ MODIFY THIS LINE (ii) ~~~
+        length=edge_count*8,
         access=mmap.ACCESS_READ)
 
     scores = [1.0 / (max_node_id + 1)] * (max_node_id + 1)
@@ -44,16 +20,13 @@ def pagerank(index_file, edge_file, max_node_id, edge_count, damping_factor=0.85
 
     for it in range(iterations):
         new_scores = [0.0] * (max_node_id + 1)
-
         for i in range(edge_count):
             source, target = unpack(
-                '??',  # ~~~ MODIFY THIS LINE (iii) ~~~
-                edge_map[i * 99999: i * 99999 + 99999])  # ~~~ MODIFY THIS LINE (iv) ~~~
-
+                '>i i',
+                edge_map[i * 8: i * 8 + 8])
             source_degree = unpack(
-                '??',  # ~~~ MODIFY THIS LINE (v) ~~~
-                index_map[source * 99999: source * 99999 + 99999])[1]  # ~~~ MODIFY THIS LINE (vi) ~~~
-
+                '<i i',
+                index_map[source * 8: source * 8 + 8])[1]
             new_scores[target] += damping_factor * scores[source] / source_degree
 
         min_pr = (1 - damping_factor) / (max_node_id + 1)

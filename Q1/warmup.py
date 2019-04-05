@@ -1,6 +1,7 @@
 import mmap
 from struct import *#pack, unpack, Struct
 import math
+import os
 
 def write_data_to_binary_file(item_list, file_name):
     #print(calcsize('<i f'))
@@ -13,7 +14,8 @@ def write_data_to_binary_file(item_list, file_name):
 
 def get_memory_map_from_binary_file(file_name):
     num_bytes = 25 * 8  #og = 4 ~~~ MODIFY THIS LINE (ii) ~~~
-
+    print(num_bytes)
+    print(os.stat(file_name).st_size)
     with open(file_name, "r") as file_object:
         file_map = mmap.mmap(
             file_object.fileno(),

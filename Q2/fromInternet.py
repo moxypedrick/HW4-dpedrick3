@@ -162,6 +162,7 @@ def split(node, max_depth, min_size, n_features, depth):
 def build_tree(train, max_depth, min_size, n_features):
 	root = get_split(train, n_features) #takes the data set and splits
 	split(root, max_depth, min_size, n_features, 1) #split doe not return anything just alters root/node
+	print(root)
 	return root
 
 # Make a prediction with a decision tree
@@ -207,7 +208,7 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
 seed(2)
 
 # load and prepare data
-filename = 'sonar.all-data.csv'
+filename = 'hw4-data.csv'
 dataset = load_csv(filename)
 
 # convert string attributes to integers

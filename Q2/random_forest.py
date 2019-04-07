@@ -26,7 +26,7 @@ Do NOT change any part of the main function APART from the forest_size parameter
 """
 
 class RandomForest(object):
-    num_trees = 2
+    num_trees = 10
     decision_trees = []
 
     # the bootstrapping datasets for trees
@@ -64,21 +64,18 @@ class RandomForest(object):
             self.bootstraps_labels.append(data_label)
 
 
-    def fitting(self):
-        trees = list()
-        #print(self.bootstraps_labels)
-        print(len(self.bootstraps_labels))
+    def fitting(self, n_features):
+        #trees = list()
         for i in range(self.num_trees):
-            tree = DecisionTree()
-            tree.learn(self.bootstraps_datasets[i], self.bootstraps_labels[i])  # build tree calls get_split and split
-            trees.append(tree)
+            tree = self.decision_trees[i]
+            tree.learn(self.bootstraps_datasets[i], self.bootstraps_labels[i], n_features)  # build tree calls get_split and split
 
-        pass      
-
+        #print(len(self.decision_trees))
+        #print(self.decision_trees[0].tree)
+        pass
 
     def voting(self, X):
         y = []
-
         for record in X:
             # Following steps have been performed here:
             #   1. Find the set of trees that consider the record as an 
@@ -86,17 +83,22 @@ class RandomForest(object):
             #   2. Predict the label using each of the above found trees.
             #   3. Use majority vote to find the final label for this record.
             votes = []
+            #print("here, start to vote")
             for i in range(len(self.bootstraps_datasets)):
                 dataset = self.bootstraps_datasets[i]
+                #print(dataset)
+
                 if record not in dataset:
+                    #print('record not in dataset')
                     OOB_tree = self.decision_trees[i]
+                    #print(self.decision_trees[i])
                     effective_vote = OOB_tree.classify(record)
+                    #print("effective vote: " + str(effective_vote))
                     votes.append(effective_vote)
-
-
             counts = np.bincount(votes)
             
             if len(counts) == 0:
+                print('here')
                 # TODO: Special case 
                 #  Handle the case where the record is not an out-of-bag sample
                 #  for any of the trees. 
@@ -130,10 +132,10 @@ def main():
 
     # TODO: Initialize according to your implementation
     # VERY IMPORTANT: Minimum forest_size should be 10
-    forest_size = 10
-    num_trees = 2
+    forest_size = 15
+    num_trees = 10
     decision_trees = []
-    #
+    n_features = int(np.sqrt(len(XX[0])-1))
 
     # the bootstrapping datasets for trees
     # bootstraps_datasets is a list of lists, where each list in bootstraps_datasets is a bootstrapped dataset.
@@ -143,9 +145,6 @@ def main():
     # bootstraps_labels is a list of lists, where the 'i'th list contains the labels corresponding to records in
     # the 'i'th bootstrapped dataset.
     bootstraps_labels = []
-
-
-
 
     # Initializing a random forest.
     randomForest = RandomForest(forest_size)
@@ -159,20 +158,20 @@ def main():
 
     # Building trees in the forest
     print("fitting the forest")
-    randomForest.fitting()
+    randomForest.fitting(n_features)
 
     # Calculating an unbiased error estimation of the random forest
     # based on out-of-bag (OOB) error estimate.
-    #y_predicted = randomForest.voting(X)
+    y_predicted = randomForest.voting(X)
 
     # Comparing predicted and true labels
-    #results = [prediction == truth for prediction, truth in zip(y_predicted, y)]
+    results = [prediction == truth for prediction, truth in zip(y_predicted, y)]
 
     # Accuracy
-    #accuracy = float(results.count(True)) / float(len(results))
+    accuracy = float(results.count(True)) / float(len(results))
 
-    ##print("accuracy: %.4f" % accuracy)
-    #print("OOB estimate: %.4f" % (1-accuracy))
+    print("accuracy: %.4f" % accuracy)
+    print("OOB estimate: %.4f" % (1-accuracy))
 
 
 if __name__ == "__main__":

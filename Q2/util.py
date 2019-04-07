@@ -6,8 +6,6 @@ import math
 # This method computes entropy for information gain
 def entropy(class_y):
 
-    # Example:
-    #    entropy([0,0,0,1,1,1,1,1,1]) = 0.92
     np_array = class_y
     zero_count = 0
     one_count = 0
@@ -22,14 +20,14 @@ def entropy(class_y):
 
     sum_count = zero_count + one_count
     if zero_count == 0:
-        p_zero = 0
+        p_zero = -0.0
         p_zero_log = 0
     else:
         p_zero = zero_count / sum_count
         p_zero_log = np.log2(p_zero)
 
     if one_count == 0:
-        p_one = 0
+        p_one = -0.0
         p_one_log = 0
     else:
         p_one = one_count / sum_count
@@ -86,7 +84,6 @@ def information_gain(previous_y, current_y):
     P_left = len(current_y[0])/len(previous_y)
     H_Right = entropy(current_y[1])
     P_Right = len(current_y[1])/len(previous_y)
-    #print(H, H_left, P_left, H_Right, P_Right)
 
     info_gain = H - (H_left * P_left + H_Right * P_Right)
 

@@ -9,7 +9,7 @@ class DecisionTree(object):
         self.tree = {}
         pass
 
-    def learn(self, X, y):
+    def learn(self, X, y, n_features):
         # TODO: Train the decision tree (self.tree) using the the sample X and labels y
         # You will have to make use of the functions in utils.py to train the tree
         
@@ -22,46 +22,71 @@ class DecisionTree(object):
 
         #I should pass get_split a x and y. This x and y
 
-        def get_split(dataset, labels):
+        def get_split(dataset2, labels2, n_features2, side):
             counter = 0
-            #class_values = list(set(row[-1] for row in dataset))
-            b_index, b_value, b_score, b_groups = 999, 999, 999, None
-            IG_index = 0
-            features = list()
-            n_features = int(np.sqrt(len(dataset[0])-1))
-            while len(features)< n_features:
-                index = np.random.random_integers(len(dataset[0])-1)
-                if index not in features:
-                    features.append(index)
-            #print(len(features))
-            #print(features)
-            #print(y[0])
-            for index in features:
-                for row in dataset:
-                    #print(row[index],index)
-                    X_left, X_right, y_left, y_right = partition_classes(dataset,labels,index,row[index])
-                    #print(y_left)
-                    #print(y_right)
-                    ig = information_gain(labels,[y_left, y_right])
-                    #print(IG_index,ig)
-
-                    if ig > IG_index:
+            ogH = entropy(labels2)
+            if ogH != 0.0:
+                b_index, b_value, b_score, b_groups = 999, 999, 999, None
+                IG_index = 0
+                features = list()
+                while len(features)< n_features2:
+                    #print(len(dataset2[0]))
+                    index = np.random.random_integers(len(dataset2[0])-2)
+                    #print(index)
+                    if index not in features:
+                        features.append(index)
+                for index in features:
+                    colSum = []
+                    for row in dataset2:
+                        colSum.append(row[index])
+                        X_left, X_right, y_left, y_right = partition_classes(dataset2,labels2,index,row[index])
+                        ig = information_gain(labels2,[y_left, y_right])
+                        if ig > IG_index:
+                            IG_index = ig
+                            b_index = index  # row that split occurred on
+                            b_value = row[index]  # value that split occurred
+                            b_score = ig  # gini index that caused split
+                            b_groups = [X_left,y_left,X_right,y_right]  #[X_left,y_left,X_right,y_right] the split group
+                    #ig = information_gain(labels2, [y_left, y_right])
+                    #print(ig, IG_index)
+                    if IG_index == 0.0:
+                        colMean = np.mean(colSum)
+                        X_left, X_right, y_left, y_right = partition_classes(dataset2, labels2, index, colMean)
+                        ig = information_gain(labels2, [y_left, y_right])
                         b_index = index  # row that split occurred on
-                        b_value = row[index]  # value that split occurred
+                        b_value = colMean  # value that split occurred
                         b_score = ig  # gini index that caused split
-                        b_groups = [X_left,y_left,X_right,y_right]  # the split group
-            #print({'index': b_index, 'value': b_value, 'groups': b_groups})
-            return {'index': b_index, 'value': b_value, 'groups': b_groups}
+                        b_groups = [X_left, y_left, X_right, y_right]
+                return {'index': b_index, 'value': b_value, 'groups': b_groups}
+            elif side == 'left':
+                b_index = None  # row that split occurred on
+                b_value = None  # value that split occurred
+                b_score = None  # information gain index that caused split
+                b_groups = [dataset2, labels2, None , None]
+                return {'index': b_index, 'value': b_value, 'groups': b_groups}
+            else:
+                b_index = None  # row that split occurred on
+                b_value = None  # value that split occurred
+                b_score = None  # information gain index that caused split
+                b_groups = [None, None, dataset2, labels2]
+                return {'index': b_index, 'value': b_value, 'groups': b_groups}
 
         def split(node, max_depth, min_size, n_features, depth, counter):
             counter = counter + 1
-            print(counter, max_depth, min_size,n_features,depth)
-            left,labels_left,right,labels_right = node['groups']
+
+            left = node['groups'][0]
+            labels_left = node['groups'][1]
+            right = node['groups'][2]
+            labels_right = node['groups'][3]
+
 
             del (node['groups'])
             # check for a no split
             if not left or not right:
-                node['left'] = node['right'] = to_terminal(left + right)
+                if not left:
+                    node['left'] = node['right'] = to_terminal(right)
+                else:
+                    node['left'] = node['right'] = to_terminal(left)
                 return
             # check for max depth
             if depth >= max_depth:
@@ -71,46 +96,51 @@ class DecisionTree(object):
             if len(left) <= min_size:
                 node['left'] = to_terminal(left)
             else:
-                node['left'] = get_split(left, labels_left)
-                split(node['left'], 2, min_size, 2, depth + 1, counter)
+                node['left'] = get_split(left, labels_left, n_features, 'left')
+                split(node['left'], max_depth, min_size, n, depth + 1, counter)
             # process right child
             if len(right) <= min_size:
                 node['right'] = to_terminal(right)
             else:
-                node['right'] = get_split(right, labels_right)
-                split(node['right'], 2, min_size, 2, depth + 1, counter)
+                node['right'] = get_split(right, labels_right,n_features, 'right')
+                split(node['right'], max_depth, min_size, n_features, depth + 1, counter)
 
         def to_terminal(group):
             outcomes = [row[-1] for row in group]
             return max(set(outcomes), key=outcomes.count)
 
         counter = 0
-        print(counter)
-        root = get_split(X,y)  # takes the data set and splits
-        print('finished root')
+        n = n_features
+        max_depth = 10
+        min_size = 1
+        root = get_split(X,y,n,'both')  # takes the data set and splits
 
-        split(root, 2, 2, len(y), 1, counter)  #max_depth, min_size, n_features, 1) split doe not return anything just alters root/node
-        return root
+        split(root, max_depth, min_size, n, 1, counter)  #max_depth, min_size, n_features, 1) split doe not return anything just alters root/node
+        self.tree = root
 
 
-
-
-    def classify(self, record):
+    def classify(self, record2):
         # TODO: classify the record using self.tree and return the predicted label
-        def predict(node, row):
-            if row[node['index']] < node['value']:
-                if isinstance(node['left'], dict):
-                    return predict(node['left'], row)
-                else:
-                    return node['left']
+        def predict(tree_dict, record):
+            #print(tree_dict['value'], tree_dict['value'] == None)
+            if tree_dict['value'] == None:
+                #print('here', tree_dict['left'])
+                return int(tree_dict['left'])
             else:
-                if isinstance(node['right'], dict):
-                    return predict(node['right'], row)
+                if record[tree_dict['index']] < tree_dict['value']:
+                    if isinstance(tree_dict['left'], dict):
+                        return predict(tree_dict['left'], record)
+                    else:
+                        #print(tree_dict['left'])
+                        return int(tree_dict['left'])
                 else:
-                    return node['right']
+                    if isinstance(tree_dict['right'], dict):
+                        return predict(tree_dict['right'], record)
+                    else:
+                        #print(tree_dict['right'])
+                        return int(tree_dict['right'])
 
-        def bagging_predict(trees, row):
-            predictions = [predict(tree, row) for tree in trees]
-            return max(set(predictions), key=predictions.count)
+        tree_dictionary = self.tree
 
-        pass
+        return(predict(tree_dictionary, record2))
+

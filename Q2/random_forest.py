@@ -26,7 +26,7 @@ Do NOT change any part of the main function APART from the forest_size parameter
 """
 
 class RandomForest(object):
-    num_trees = 0
+    num_trees = 2
     decision_trees = []
 
     # the bootstrapping datasets for trees
@@ -45,15 +45,14 @@ class RandomForest(object):
 
 
     def _bootstrapping(self, XX, n):
-        # Reference: https://en.wikipedia.org/wiki/Bootstrapping_(statistics)
-        #
-        # TODO: Create a sample dataset of size n by sampling with replacement
-        #       from the original dataset XX.
-        # Note that you would also need to record the corresponding class labels
-        # for the sampled records for training purposes. 
-
-        samples = [] # sampled dataset
+        values = np.random.randint(0, len(XX), n)
+        samples = []  # sampled dataset
         labels = []  # class labels for the sampled records
+
+        for i in values:
+            samples.append(XX[i])
+            labels.append(XX[i][-1])
+
         return (samples, labels)
 
 
@@ -66,8 +65,14 @@ class RandomForest(object):
 
 
     def fitting(self):
-        # TODO: Train `num_trees` decision trees using the bootstraps datasets
-        # and labels by calling the learn function from your DecisionTree class.
+        trees = list()
+        #print(self.bootstraps_labels)
+        print(len(self.bootstraps_labels))
+        for i in range(self.num_trees):
+            tree = DecisionTree()
+            tree.learn(self.bootstraps_datasets[i], self.bootstraps_labels[i])  # build tree calls get_split and split
+            trees.append(tree)
+
         pass      
 
 
@@ -79,7 +84,7 @@ class RandomForest(object):
             #   1. Find the set of trees that consider the record as an 
             #      out-of-bag sample.
             #   2. Predict the label using each of the above found trees.
-            #   3. Use majority vote to find the final label for this recod.
+            #   3. Use majority vote to find the final label for this record.
             votes = []
             for i in range(len(self.bootstraps_datasets)):
                 dataset = self.bootstraps_datasets[i]
@@ -126,7 +131,22 @@ def main():
     # TODO: Initialize according to your implementation
     # VERY IMPORTANT: Minimum forest_size should be 10
     forest_size = 10
-    
+    num_trees = 2
+    decision_trees = []
+    #
+
+    # the bootstrapping datasets for trees
+    # bootstraps_datasets is a list of lists, where each list in bootstraps_datasets is a bootstrapped dataset.
+    bootstraps_datasets = []
+
+    # the true class labels, corresponding to records in the bootstrapping datasets
+    # bootstraps_labels is a list of lists, where the 'i'th list contains the labels corresponding to records in
+    # the 'i'th bootstrapped dataset.
+    bootstraps_labels = []
+
+
+
+
     # Initializing a random forest.
     randomForest = RandomForest(forest_size)
 
@@ -134,22 +154,25 @@ def main():
     print("creating the bootstrap datasets")
     randomForest.bootstrapping(XX)
 
+    #print(randomForest.bootstraps_datasets[1])
+    #print(randomForest.bootstraps_labels[1])
+
     # Building trees in the forest
     print("fitting the forest")
     randomForest.fitting()
 
     # Calculating an unbiased error estimation of the random forest
     # based on out-of-bag (OOB) error estimate.
-    y_predicted = randomForest.voting(X)
+    #y_predicted = randomForest.voting(X)
 
     # Comparing predicted and true labels
-    results = [prediction == truth for prediction, truth in zip(y_predicted, y)]
+    #results = [prediction == truth for prediction, truth in zip(y_predicted, y)]
 
     # Accuracy
-    accuracy = float(results.count(True)) / float(len(results))
+    #accuracy = float(results.count(True)) / float(len(results))
 
-    print("accuracy: %.4f" % accuracy)
-    print("OOB estimate: %.4f" % (1-accuracy))
+    ##print("accuracy: %.4f" % accuracy)
+    #print("OOB estimate: %.4f" % (1-accuracy))
 
 
 if __name__ == "__main__":

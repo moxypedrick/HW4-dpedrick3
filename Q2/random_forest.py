@@ -3,46 +3,16 @@ import csv
 import numpy as np  # http://www.numpy.org
 import ast
 
-# This starter code does not run. You will have to add your changes and
-# turn in code that runs properly. 
-
-"""
-Here, 
-1. X is assumed to be a matrix with n rows and d columns where n is the
-number of total records and d is the number of features of each record. 
-2. y is assumed to be a vector of labels of length n.
-3. XX is similar to X, except that XX also contains the data label for each
-record.
-"""
-
-"""
-This skeleton is provided to help you implement the assignment.You must 
-implement the existing functions as necessary. You may add new functions
-as long as they are called from within the given classes. 
-
-VERY IMPORTANT!
-Do NOT change the signature of the given functions.
-Do NOT change any part of the main function APART from the forest_size parameter.  
-"""
-
 class RandomForest(object):
     num_trees = 10
     decision_trees = []
-
-    # the bootstrapping datasets for trees
-    # bootstraps_datasets is a list of lists, where each list in bootstraps_datasets is a bootstrapped dataset.
     bootstraps_datasets = []
-
-    # the true class labels, corresponding to records in the bootstrapping datasets
-    # bootstraps_labels is a list of lists, where the 'i'th list contains the labels corresponding to records in 
-    # the 'i'th bootstrapped dataset.
     bootstraps_labels = []
 
     def __init__(self, num_trees):
         # Initialization done here
         self.num_trees = num_trees
         self.decision_trees = [DecisionTree() for i in range(num_trees)]
-
 
     def _bootstrapping(self, XX, n):
         values = np.random.randint(0, len(XX), n)
@@ -57,7 +27,6 @@ class RandomForest(object):
 
 
     def bootstrapping(self, XX):
-        # Initializing the bootstap datasets for each tree
         for i in range(self.num_trees):
             data_sample, data_label = self._bootstrapping(XX, len(XX))
             self.bootstraps_datasets.append(data_sample)
@@ -65,13 +34,9 @@ class RandomForest(object):
 
 
     def fitting(self, n_features):
-        #trees = list()
         for i in range(self.num_trees):
             tree = self.decision_trees[i]
-            tree.learn(self.bootstraps_datasets[i], self.bootstraps_labels[i], n_features)  # build tree calls get_split and split
-
-        #print(len(self.decision_trees))
-        #print(self.decision_trees[0].tree)
+            tree.learn(self.bootstraps_datasets[i], self.bootstraps_labels[i], n_features)
         pass
 
     def voting(self, X):
@@ -83,17 +48,12 @@ class RandomForest(object):
             #   2. Predict the label using each of the above found trees.
             #   3. Use majority vote to find the final label for this record.
             votes = []
-            #print("here, start to vote")
             for i in range(len(self.bootstraps_datasets)):
                 dataset = self.bootstraps_datasets[i]
-                #print(dataset)
 
                 if record not in dataset:
-                    #print('record not in dataset')
                     OOB_tree = self.decision_trees[i]
-                    #print(self.decision_trees[i])
                     effective_vote = OOB_tree.classify(record)
-                    #print("effective vote: " + str(effective_vote))
                     votes.append(effective_vote)
             counts = np.bincount(votes)
             
@@ -112,7 +72,7 @@ class RandomForest(object):
 def main():
     X = list()
     y = list()
-    XX = list()  # Contains data features and data labels
+    XX = list()
     numerical_cols = numerical_cols=set([i for i in range(0,43)]) # indices of numeric attributes (columns)
 
     # Loading data set
@@ -153,8 +113,6 @@ def main():
     print("creating the bootstrap datasets")
     randomForest.bootstrapping(XX)
 
-    #print(randomForest.bootstraps_datasets[1])
-    #print(randomForest.bootstraps_labels[1])
 
     # Building trees in the forest
     print("fitting the forest")

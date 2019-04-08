@@ -10,17 +10,6 @@ class DecisionTree(object):
         pass
 
     def learn(self, X, y, n_features):
-        # TODO: Train the decision tree (self.tree) using the the sample X and labels y
-        # You will have to make use of the functions in utils.py to train the tree
-        
-        # One possible way of implementing the tree:
-        #    Each node in self.tree could be in the form of a dictionary:
-        #       https://docs.python.org/2/library/stdtypes.html#mapping-types-dict
-        #    For example, a non-leaf node with two children can have a 'left' key and  a 
-        #    'right' key. You can add more keys which might help in classification
-        #    (eg. split attribute and split value)
-
-        #I should pass get_split a x and y. This x and y
 
         def get_split(dataset2, labels2, n_features2, side):
             counter = 0
@@ -30,9 +19,7 @@ class DecisionTree(object):
                 IG_index = 0
                 features = list()
                 while len(features)< n_features2:
-                    #print(len(dataset2[0]))
                     index = np.random.random_integers(len(dataset2[0])-2)
-                    #print(index)
                     if index not in features:
                         features.append(index)
                 for index in features:
@@ -46,9 +33,7 @@ class DecisionTree(object):
                             b_index = index  # row that split occurred on
                             b_value = row[index]  # value that split occurred
                             b_score = ig  # gini index that caused split
-                            b_groups = [X_left,y_left,X_right,y_right]  #[X_left,y_left,X_right,y_right] the split group
-                    #ig = information_gain(labels2, [y_left, y_right])
-                    #print(ig, IG_index)
+                            b_groups = [X_left,y_left,X_right,y_right]
                     if IG_index == 0.0:
                         colMean = np.mean(colSum)
                         X_left, X_right, y_left, y_right = partition_classes(dataset2, labels2, index, colMean)
@@ -120,24 +105,19 @@ class DecisionTree(object):
 
 
     def classify(self, record2):
-        # TODO: classify the record using self.tree and return the predicted label
         def predict(tree_dict, record):
-            #print(tree_dict['value'], tree_dict['value'] == None)
             if tree_dict['value'] == None:
-                #print('here', tree_dict['left'])
                 return int(tree_dict['left'])
             else:
                 if record[tree_dict['index']] < tree_dict['value']:
                     if isinstance(tree_dict['left'], dict):
                         return predict(tree_dict['left'], record)
                     else:
-                        #print(tree_dict['left'])
                         return int(tree_dict['left'])
                 else:
                     if isinstance(tree_dict['right'], dict):
                         return predict(tree_dict['right'], record)
                     else:
-                        #print(tree_dict['right'])
                         return int(tree_dict['right'])
 
         tree_dictionary = self.tree

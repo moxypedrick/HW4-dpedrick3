@@ -2,8 +2,6 @@ from scipy import stats
 import numpy as np
 import math
 
-
-# This method computes entropy for information gain
 def entropy(class_y):
 
     np_array = class_y
@@ -37,10 +35,7 @@ def entropy(class_y):
     return entropy
 
 def partition_classes(X, y, split_attribute, split_val):
-    #   X               : data containing all attributes
-    #   y               : labels
-    #   split_attribute : column index of the attribute to split on
-    #   split_val       : either a numerical or categorical value to divide the split_attribute
+
     list_length = len(X)
     data = X
     labels = y
@@ -49,8 +44,6 @@ def partition_classes(X, y, split_attribute, split_val):
     y_left = []
     y_right = []
 
-    # Determine if split_val is a categorical or other value
-    # type(myVar) == str
     split_type = 'numeric' #either numeric or categorical
 
     if split_type == 'numeric':
@@ -73,11 +66,6 @@ def partition_classes(X, y, split_attribute, split_val):
     return (X_left, X_right, y_left, y_right)
 
 def information_gain(previous_y, current_y):
-    # Inputs:
-    #   previous_y: the distribution of original labels (0's and 1's)
-    #   current_y:  the distribution of labels after splitting based on a particular
-    #               split attribute and split value
-
 
     H = entropy(previous_y)
     H_left = entropy(current_y[0])

@@ -33,7 +33,7 @@ random_state = 100
 # TODO: Split 70% of the data into training and 30% into test sets. Call them x_train, x_test, y_train and y_test.
 # Use the train_test_split method in sklearn with the parameter 'shuffle' set to true and the 'random_state' set to 100.
 # XXX
-#x_train,x_test = train_test_split(x_data, test_size = 0.3, shuffle = True, random_state=100)
+x_train,x_test = train_test_split(x_data, test_size = 0.3, shuffle = True, random_state=100)
 y_train,y_test = train_test_split(y_data, test_size = 0.3, shuffle = True, random_state=100)
 
 # ############################################### Linear Regression ###################################################
@@ -41,8 +41,8 @@ y_train,y_test = train_test_split(y_data, test_size = 0.3, shuffle = True, rando
 # TODO: Create a LinearRegression classifier and train it.
 # XXX
 
-#lnrRgr = linear_model.LinearRegression()
-#lnrRgr.fit(x_train,y_train)
+lnrRgr = linear_model.LinearRegression()
+lnrRgr.fit(x_train,y_train)
 
 
 # XXX
@@ -51,10 +51,10 @@ y_train,y_test = train_test_split(y_data, test_size = 0.3, shuffle = True, rando
 # Note: Round the output values greater than or equal to 0.5 to 1 and those less than 0.5 to 0. You can use y_predict.round() or any other method.
 # XXX
 
-#y_pred = lnrRgr.predict(x_train)
-#y_pred2 = lnrRgr.predict(x_test)
+y_pred = lnrRgr.predict(x_train)
+y_pred2 = lnrRgr.predict(x_test)
 
-#print('Mean squared error: %.2f' % mean_squared_error(y_test, y_pred2))
+print('Mean squared error: %.2f' % mean_squared_error(y_test, y_pred2))
 
 
 # ############################################### Random Forest Classifier ##############################################
@@ -63,20 +63,20 @@ y_train,y_test = train_test_split(y_data, test_size = 0.3, shuffle = True, rando
 # X
 
 
-#clf = RandomForestClassifier(n_estimators=100,max_depth=2,random_state=0)
+clf = RandomForestClassifier(n_estimators=100,max_depth=2,random_state=0)
 
-#clf.fit(x_train,y_train)
+clf.fit(x_train,y_train)
 
 # XXX
 # TODO: Test its accuracy on the training set using the accuracy_score method.
 # TODO: Test its accuracy on the test set using the accuracy_score method.
 # XXX
 
-#y_pred3_train = clf.predict(x_train)
-#y_pred3_test = clf.predict(x_test)
+y_pred3_train = clf.predict(x_train)
+y_pred3_test = clf.predict(x_test)
 
-#print(accuracy_score(y_train, y_pred3_train))
-#print(accuracy_score(y_test, y_pred3_test))
+print(accuracy_score(y_train, y_pred3_train))
+print(accuracy_score(y_test, y_pred3_test))
 
 # XXX
 # TODO: Determine the feature importance as evaluated by the Random Forest Classifier.
@@ -85,33 +85,33 @@ y_train,y_test = train_test_split(y_data, test_size = 0.3, shuffle = True, rando
 #       Hint: There is a direct function available in sklearn to achieve this. Also checkout argsort() function in Python.
 # XXX
 
-#coefs_list = clf.feature_importances_
-#col_names = data.columns.values
-#coef_sorted_list = np.argsort(coefs_list)
-#coef_sorted_list2 = []
-#for i in range(len(data.columns.values)-1):
-#    coef_sorted_list2.append(col_names[coef_sorted_list[i]])
+coefs_list = clf.feature_importances_
+col_names = data.columns.values
+coef_sorted_list = np.argsort(coefs_list)
+coef_sorted_list2 = []
+for i in range(len(data.columns.values)-1):
+    coef_sorted_list2.append(col_names[coef_sorted_list[i]])
 
-#print(coef_sorted_list2)
+print(coef_sorted_list2)
 # XXX
 # TODO: Tune the hyper-parameters 'n_estimators' and 'max_depth'.
 #       Print the best params, using .best_params_, and print the best score, using .best_score_.
 # XXX
 
 
-#clf2 = RandomForestClassifier(random_state=0)
+clf2 = RandomForestClassifier(random_state=0)
 
-#n_estimators_list = np.array([10,100])
-#max_depth_list = np.array([2,4,8])
+n_estimators_list = np.array([10,100])
+max_depth_list = np.array([2,4,8])
 
-#grid = GridSearchCV(estimator=clf2, cv=10, param_grid=dict(n_estimators=n_estimators_list, max_depth = max_depth_list))
+grid = GridSearchCV(estimator=clf2, cv=10, param_grid=dict(n_estimators=n_estimators_list, max_depth = max_depth_list))
 
-#grid.fit(x_train,y_train)
+grid.fit(x_train,y_train)
 
-#print(grid.best_score_)
-#print(grid.best_estimator_.n_estimators)
-#print(grid.best_estimator_.max_depth)
-#print(grid.best_params_)
+print(grid.best_score_)
+print(grid.best_estimator_.n_estimators)
+print(grid.best_estimator_.max_depth)
+print(grid.best_params_)
 
 
 # ############################################ Support Vector Machine ###################################################
@@ -166,6 +166,8 @@ print(grid3.best_params_)
 #       - The singular values corresponding to each of the selected components.
 # XXX
 
+pca = PCA(n_components=10, svd_solver='full')
+pca.fit(x_test)
 
-
-
+print(pca.explained_variance_)
+print(pca.singular_values_)

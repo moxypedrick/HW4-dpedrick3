@@ -24,6 +24,7 @@ class DecisionTree(object):
                         features.append(index)
                 for index in features:
                     colSum = []
+                    colMean = np.mean(colSum)
                     for row in dataset2:
                         colSum.append(row[index])
                         X_left, X_right, y_left, y_right = partition_classes(dataset2,labels2,index,row[index])

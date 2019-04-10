@@ -40,8 +40,8 @@ SVM - Best combination of parameter values - C: 0.001
 Q 3.3
 
 SVM - Highest mean testing/cross-validated accuracy (best score): 0.54
-SVM - Mean train score: [0.5559794 0.5559794 0.5559794 0.5559794 0.5559794 0.5559794]
-SVM Mean fit time: [4.71626251 3.00929561 4.62387459 3.05265472 5.58056111 4.05027728]
+SVM - Mean train score: 0.56
+SVM Mean fit time: 4.03
 
 *********************************************
 
@@ -54,17 +54,17 @@ Random Forest  - Least important feature (e.g. X1): X7
 
 Q 3.5
 
-Best Classifier and why (in at most 50 words): 
+Best Classifier and why (in at most 50 words): The random forest classifier is best because it has the highest accuracy after tuning. The random forest classifier is also very fast. 
 
 *********************************************
 
 Q 3.6 Principal Component Analysis
 
-"PCA - Percentage of variance explained by each of the selected components (enter the entire array as [0.12, …, 0.012])": [4.07649320e+07 1.72778781e+04 3.82169635e+03 1.16954497e+03
- 9.43197876e+02 2.20539130e+02 2.00480928e+02 9.47066972e+01
- 8.92676843e+01 7.12895200e+01]
-"PCA - Singular values corresponding to each of the selected components (enter the entire array as [0.09, …, 0.037])": [427968.26939393   8810.76083261   4143.77626098   2292.3275437
-   2058.58885125    995.43071708    949.08419522    652.31678709
-    633.30853908    565.95389694]
+"PCA - Percentage of variance explained by each of the selected components (enter the entire array as [0.12, …, 0.012])": [4.07649320e+07, 1.72778781e+04, 3.82169635e+03, 1.16954497e+03,
+ 9.43197876e+02, 2.20539130e+02, 2.00480928e+02, 9.47066972e+01,
+ 8.92676843e+01, 7.12895200e+01]
+"PCA - Singular values corresponding to each of the selected components (enter the entire array as [0.09, …, 0.037])": [427968.26939393,   8810.76083261,   4143.77626098,   2292.3275437,
+   2058.58885125,    995.43071708,    949.08419522,    652.31678709,
+    633.30853908,    565.95389694]
 
 *********************************************

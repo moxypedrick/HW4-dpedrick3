@@ -1,13 +1,12 @@
 from scipy import stats
 import numpy as np
-import math
+
 
 def entropy(class_y):
 
     np_array = class_y
     zero_count = 0
     one_count = 0
-    #print(np_array)
     for i in np_array:
         if i == 1:
             one_count = one_count + 1
@@ -32,6 +31,7 @@ def entropy(class_y):
         p_one_log = np.log2(p_one)
 
     entropy = -p_zero * p_zero_log  - p_one * p_one_log
+
     return entropy
 
 def partition_classes(X, y, split_attribute, split_val):
